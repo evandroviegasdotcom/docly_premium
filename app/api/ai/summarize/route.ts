@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 export async function POST(req: NextRequest) {
   try {
-    const { url } = await req.json();
+    const { url, summarySize } = await req.json();
 
     // Step 1: Convert PDF to text using PDF.co
     const res = await fetch("https://api.pdf.co/v1/pdf/convert/to/text", {
@@ -29,6 +29,8 @@ export async function POST(req: NextRequest) {
     const textRes = await fetch(data.url);
     const text = await textRes.text();
 
+
+    const summarySizeMap = {"small": 1, "medium": 4, "large": 10}
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -38,15 +40,14 @@ export async function POST(req: NextRequest) {
         },
         {
           role: "user",
-          content: `Summarize the following document text in 2-3 sentences:\n\n${text}`,
+          content: `Please summarize the following document in ${summarySizeMap[summarySize as keyof typeof summarySizeMap] || 4} complete sentences. Ensure all sentences are finished and informative:\n\n${text.slice(0, 6000)}`,
         },
       ],
-      max_tokens: 150,
+      max_tokens: summarySize === "small" ? 100 : summarySize === "large" ? 500 : 300,
       temperature: 0.7,
     });
 
     const summary = completion.choices[0].message.content;
-    console.log(summary)
 
     return NextResponse.json({ summary }, { status: 200 });
   } catch (error: any) {

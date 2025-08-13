@@ -4,6 +4,9 @@ import { ArrowLeft, Bookmark, Cpu, Sparkles } from "lucide-react"; // Added icon
 import { Simonetta } from "next/font/google";
 import Link from "next/link";
 import Summary from "./_components/ai";
+import { auth } from "@/services/auth";
+import { subscription } from "@/services/subscription";
+import FavoriteButton from "./_components/favorite-button";
 
 const simonetta = Simonetta({ subsets: ["latin"], weight: "400" });
 
@@ -13,7 +16,10 @@ export default async function SummaryPage({
   params: { id: string };
 }) {
   const fileData = await file.getSummary(params.id);
+  const authedUser = await auth.getAuthedUser();
+  if (!authedUser) return null;
 
+  const isPro = await subscription.isUserPro(authedUser.id);
   return (
     <div className="md:p-8 w-full space-y-4">
       <h1 className={`text-3xl font-bold ${simonetta.className}`}>
@@ -44,14 +50,13 @@ export default async function SummaryPage({
             <Link href={fileData.url} target="_blank">
               <Button className="w-fit">View Original PDF</Button>
             </Link>
-            <Button className="flex items-center gap-1" variant="outline">
-              <span>Add to favorites</span>
-              <Bookmark />
-            </Button>
+            {isPro ? (
+              <FavoriteButton authedUserId={authedUser.id} docId={fileData.id} />
+            ) : null}
           </div>
           <p className="text-sm text-muted-foreground">
-              Uploaded on {new Date(fileData.createdAt!).toLocaleDateString()}
-            </p>
+            Uploaded on {new Date(fileData.createdAt!).toLocaleDateString()}
+          </p>
         </div>
       </div>
     </div>

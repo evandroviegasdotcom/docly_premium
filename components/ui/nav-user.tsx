@@ -1,15 +1,8 @@
-"use client"
+"use client";
 
-import {
-  LogOutIcon,
-  MoreVerticalIcon,
-} from "lucide-react"
+import { Gem, LogOutIcon, MoreVerticalIcon } from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,22 +11,40 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useClerk } from "@clerk/nextjs"
-import useSWR  from "swr"
-import { auth } from "@/services/auth"
+} from "@/components/ui/sidebar";
+import { useClerk } from "@clerk/nextjs";
+import useSWR from "swr";
+import { auth } from "@/services/auth";
+import { subscription } from "@/services/subscription";
+import { toast } from "sonner";
 
 export function NavUser() {
-  const { data: user, error, isLoading } = useSWR('/api/authed', auth.getAuthedUser)
-  const { isMobile } = useSidebar()
-  const { signOut } = useClerk()
-  if(!user) return 
+  const {
+    data: user,
+    error,
+    isLoading,
+  } = useSWR("/api/authed", auth.getAuthedUser);
+  const { data: isPro } = useSWR("/api/is-pro", () =>
+    subscription.isUserPro(user?.id || "")
+  );
+
+
+
+  const { isMobile } = useSidebar();
+  const { signOut } = useClerk();
+  if (!user) return;
+
+  const manageSubscription = async () => {
+    const url = await subscription.createBillingPortal(user.id)
+    if(!url) return toast.error("Something went wrong")
+      location.replace(url)
+  }
 
   return (
     <SidebarMenu>
@@ -49,7 +60,17 @@ export function NavUser() {
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="flex items-center gap-1">
+
                 <span className="truncate font-medium">{user.name}</span>
+                {isPro && (
+                  <div className="flex items-center gap-2 bg-primary rounded-full px-1.5 py-1 font-bold text-[10px] text-white">
+                    PRO
+                    <Gem size="12px" />
+                  </div>
+                )}
+                </div>
+
                 <span className="truncate text-xs text-muted-foreground">
                   {user.email}
                 </span>
@@ -57,6 +78,7 @@ export function NavUser() {
               <MoreVerticalIcon className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
@@ -78,7 +100,14 @@ export function NavUser() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ redirectUrl: '/' })}>
+            {isPro && (
+              <DropdownMenuItem onClick={manageSubscription}>
+                <Gem />
+                Manage Subscription
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuItem onClick={() => signOut({ redirectUrl: "/" })}>
               <LogOutIcon />
               Log out
             </DropdownMenuItem>
@@ -86,5 +115,5 @@ export function NavUser() {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

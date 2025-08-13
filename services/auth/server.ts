@@ -14,4 +14,10 @@ export async function getAuthedUser() {
     }
 }
 
+export type User = {
+    imageUrl: string,
+    name: string,
+    email: string 
+    id: string
+}
 

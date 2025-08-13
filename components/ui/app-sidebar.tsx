@@ -3,15 +3,13 @@
 import * as React from "react";
 import {
   File,
-  BarChartIcon,
-  FolderIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
   SearchIcon,
   SettingsIcon,
-  Languages,
   Home,
   Bookmark,
+  Gem,
 } from "lucide-react";
 
 import { NavMain } from "@/components/ui/nav-main";
@@ -49,9 +47,16 @@ const data = {
       title: "Favorites",
       url: "/home/favorites",
       icon: Bookmark,
+      onlyShowToProUsers: true
     },
   ],
   navSecondary: [
+    {
+      title: "Plans",
+      url: "/plans",
+      icon: Gem,
+      showToProUsers: false
+    },
     {
       title: "Settings",
       url: "#",

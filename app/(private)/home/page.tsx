@@ -11,14 +11,14 @@ export default async function HomePage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4 text-4xl">
-      <Avatar className="h-20 w-20 rounded-lg">
-                  <AvatarImage src={authedUser.imageUrl} alt={authedUser.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-          <div className="flex items-center gap-2">
-    <span>👋 Hi, </span>
-    <span className="font-semibold">{authedUser.name}</span>
-          </div>
+        <Avatar className="h-20 w-20 rounded-lg">
+          <AvatarImage src={authedUser.imageUrl} alt={authedUser.name} />
+          <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+        </Avatar>
+        <div className="flex items-center gap-2">
+          <span>👋 Hi, </span>
+          <span className="font-semibold">{authedUser.name}</span>
+        </div>
       </div>
       <hr />
       <DocumentsList summaries={summaries} />

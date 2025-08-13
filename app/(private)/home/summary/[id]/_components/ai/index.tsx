@@ -33,7 +33,7 @@ export default function Summary({ fileData }: { fileData: File }) {
           <div>{fileData.summary}</div>
         </TabsContent>
         <TabsContent value="chat" className="h-full">
-    <Chat />
+    <Chat summary={fileData.summary} />
         </TabsContent>
       </Tabs>
 
