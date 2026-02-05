@@ -7,8 +7,8 @@ import { storage } from "../storage"
 import { desc, eq } from "drizzle-orm"
 
 export async function summarizeFile(file: File, autheduserId: string, summarySize: "small" | "medium" | "large") {
-    
-    const url = await storage.uploadFile(file)
+    try {
+      const url = await storage.uploadFile(file)
     if(!url) throw new Error("Couldn't generate an url for the file")
 
     const summary =  await ai.summarizeFile(url, summarySize)
@@ -22,6 +22,10 @@ export async function summarizeFile(file: File, autheduserId: string, summarySiz
         url,
     }).returning()
     return row.id
+    } catch (error) {
+      console.log(error)
+    }
+    
 }
 
 export async function getSummary(fileId: string) {

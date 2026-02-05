@@ -13,9 +13,10 @@ const simonetta = Simonetta({ subsets: ["latin"], weight: "400" });
 export default async function SummaryPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>
 }) {
-  const fileData = await file.getSummary(params.id);
+  const awaitedParams = await params
+  const fileData = await file.getSummary(awaitedParams.id);
   const authedUser = await auth.getAuthedUser();
   if (!authedUser) return null;
 
