@@ -1,10 +1,12 @@
+import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
-import { OpenAI } from "openai";
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY!,
+  baseURL: "https://api.groq.com/openai/v1",
 });
+
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,22 +31,30 @@ export async function POST(req: NextRequest) {
     const textRes = await fetch(data.url);
     const text = await textRes.text();
 
+    const summarySizeMap = {
+      small: 1,
+      medium: 4,
+      large: 10,
+    };
 
-    const summarySizeMap = {"small": 1, "medium": 4, "large": 10}
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+    const sentenceCount =
+      summarySizeMap[summarySize as keyof typeof summarySizeMap] || 4;
+
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that summarizes documents concisely.",
+          content: "You are a helpful assistant that summarizes documents concisely. When you give the response just respond straight away with the summary",
         },
         {
           role: "user",
-          content: `Please summarize the following document in ${summarySizeMap[summarySize as keyof typeof summarySizeMap] || 4} complete sentences. Ensure all sentences are finished and informative:\n\n${text.slice(0, 6000)}`,
+          content: `Please summarize the following document in ${sentenceCount} complete sentences. Ensure all sentences are finished and informative:\n\n${text.slice(
+            0,
+            6000
+          )}`,
         },
       ],
-      max_tokens: summarySize === "small" ? 100 : summarySize === "large" ? 500 : 300,
-      temperature: 0.7,
     });
 
     const summary = completion.choices[0].message.content;

@@ -11,7 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.22",
+    "@ai-sdk/xai": "^3.0.48",
     "@clerk/nextjs": "^6.19.5",
+    "@google/genai": "^1.40.0",
     "@neondatabase/serverless": "^1.0.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -23,6 +26,7 @@
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-tooltip": "^1.2.7",
     "@uploadthing/react": "^7.3.1",
+    "ai": "^6.0.77",
     "axios": "^1.9.0",
     "canvas": "^3.1.0",
     "class-variance-authority": "^0.7.1",

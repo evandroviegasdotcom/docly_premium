@@ -12,8 +12,10 @@ export default function Chat({ summary }: { summary: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { data: user } = useSWR('/api/is-pro', () => auth.getAuthedUser())
-  const { data: isPro } = useSWR('/api/is-pro', () => subscription.isUserPro(user?.id))
+  const { data: user } = useSWR('/api/authed', () => auth.getAuthedUser())
+  console.log("user: ", user)
+  const { data: isPro } = useSWR('/api/is-pro', () => subscription.isUserPro(user?.id || ""))
+  console.log("isPro: ", isPro)
 
   const sendMessage =  async () => {
     if (!input.trim()) return;

@@ -13,7 +13,6 @@ export async function summarizeFile(file: File, autheduserId: string, summarySiz
 
     const summary =  await ai.summarizeFile(url, summarySize)
     if(!summary) throw new Error("Couldn't generate a summary for the file")
-        
 
     const [row] = await db.insert(fileTable).values({
         name: file.name,
@@ -21,6 +20,7 @@ export async function summarizeFile(file: File, autheduserId: string, summarySiz
         uploadedById: autheduserId,
         url,
     }).returning()
+    
     return row.id
     } catch (error) {
       console.log(error)
